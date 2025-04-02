@@ -1,5 +1,31 @@
 <template>
     <div class="py-4 px-4 max-w-7xl mx-auto">
+      <!-- Botón para acceso o logout -->
+      <div class="flex justify-end mb-4 gap-2">
+      <router-link
+        v-if="!autenticado"
+        to="/login"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+      >
+        Iniciar sesión
+      </router-link>
+
+      <template v-else>
+        <router-link
+          to="/admin"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Ir al panel
+        </router-link>
+        <button
+          @click="cerrarSesion"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Cerrar sesión
+        </button>
+      </template>
+    </div>
+
       <h1 class="text-4xl font-bold text-center text-green-700 mb-10">
         🐾 Animales en Adopción
       </h1>
@@ -66,45 +92,58 @@
   </template>
   
   <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { supabase } from '../lib/supabase.js'
+  import { ref, computed, onMounted } from 'vue'
+  import { useAnimalesStore } from '../stores/animales'
+  import { useRouter } from 'vue-router'
+  import { supabase } from '../lib/supabase'
+  
+  const store = useAnimalesStore()
+  
+  const filtroEspecie = ref('')
+  const filtroEstado = ref('')
+  const esAdmin = ref(false)
+  const autenticado = ref(false)
+  const router = useRouter()
+  
+  onMounted( async () => {
+    if (store.lista.length === 0) {
+      store.cargarAnimales()
+    }
 
-const animales = ref([])
-const loading = ref(true)
+    // Verificar si el usuario es admin
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      autenticado.value = true
 
-const filtroEspecie = ref('')
-const filtroEstado = ref('')
-const especiesDisponibles = ref([])
-const estadosDisponibles = ref([])
+      const { data } = await supabase
+        .from('perfiles')
+        .select('rol')
+        .eq('id', user.id)
+        .single()
 
-onMounted(async () => {
-  const { data, error } = await supabase
-    .from('animales')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('Error al cargar animales:', error)
-  } else {
-    animales.value = data
-
-    // extraer especies únicas
-    const especies = [...new Set(data.map(a => a.especie).filter(Boolean))]
-    especiesDisponibles.value = especies.sort()
-
-    const estados = [...new Set(data.map(a => a.estado).filter(Boolean))]
-    estadosDisponibles.value = estados.sort()
-  }
-
-  loading.value = false
-})
-
-const animalesFiltrados = computed(() => {
-  return animales.value.filter((animal) => {
-    const coincideEspecie = filtroEspecie.value === '' || animal.especie === filtroEspecie.value
-    const coincideEstado = filtroEstado.value === '' || animal.estado === filtroEstado.value
-    return coincideEspecie && coincideEstado
+      if (data?.rol === 'admin') {
+        esAdmin.value = true
+      }
+    }
   })
-})
-  </script>
+  
+  const animalesFiltrados = computed(() => {
+    return store.lista.filter((animal) => {
+      const coincideEspecie = !filtroEspecie.value || animal.especie === filtroEspecie.value
+      const coincideEstado = !filtroEstado.value || animal.estado === filtroEstado.value
+      return coincideEspecie && coincideEstado
+    })
+  })
+  
+  const especiesDisponibles = computed(() => store.especiesDisponibles())
+  const estadosDisponibles = computed(() => store.estadosDisponibles())
+  const loading = computed(() => store.loading)
+
+  const cerrarSesion = async () => {
+    await supabase.auth.signOut()
+    autenticado.value = false
+    esAdmin.value = false
+    router.replace('/')
+  }
+  </script>  
   

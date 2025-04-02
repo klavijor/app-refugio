@@ -31,9 +31,11 @@
   <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { supabase } from '../lib/supabase.js'
+import { useAnimalesStore } from '../stores/animales'
 
 const route = useRoute()
+const store = useAnimalesStore()
+const id = route.params.id
 const animal = ref(null)
 const loading = ref(true)
 
@@ -45,18 +47,11 @@ const whatsappLink = computed(() => {
 })
 
 onMounted(async () => {
-  const { data, error } = await supabase
-    .from('animales')
-    .select('*')
-    .eq('id', route.params.id)
-    .single()
-
-  if (error) {
-    console.error('Error al cargar detalles:', error)
-  } else {
-    animal.value = data
+  if (store.lista.length === 0) {
+    await store.cargarAnimales()
   }
 
+  animal.value = store.getAnimalPorId(id)
   loading.value = false
 })
   </script>
