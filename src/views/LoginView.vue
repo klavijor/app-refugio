@@ -18,15 +18,17 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { supabase } from '../lib/supabase'
+  import { useUsuarioStore } from '../stores/usuario'
   
   const email = ref('')
   const password = ref('')
   const error = ref('')
   const router = useRouter()
+  const usuarioStore = useUsuarioStore()
   
   const login = async () => {
     error.value = ''
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value })
+    const { error: authError } = await usuarioStore.login(email.value, password.value)
   
     if (authError) {
       error.value = authError.message
