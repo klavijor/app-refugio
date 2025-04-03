@@ -75,13 +75,39 @@ export const useAnimalesStore = defineStore('animales', {
         return { error }
     },      
         
-    async eliminarAnimal(id) {
-    const { error } = await supabase
-        .from('animales')
-        .delete()
-        .eq('id', id)
-    
-        return { error }
-    }      
+    async eliminarAnimal(id, foto_url) {
+      try {
+          if (foto_url) {
+              const urlPartes = foto_url.split('/');
+              const nombreArchivo = urlPartes[urlPartes.length - 1];
+  
+              // Eliminar la imagen del bucket de Supabase
+              const { error: errorImagen } = await supabase
+                  .storage
+                  .from('imagenes')
+                  .remove([nombreArchivo]);
+  
+              if (errorImagen) {
+                  console.error('Error al eliminar imagen:', errorImagen.message);
+                  return { error: 'No se pudo eliminar la imagen del servidor.' };
+              }
+          }
+  
+          // Eliminar el animal de la base de datos
+          const { error } = await supabase
+              .from('animales')
+              .delete()
+              .eq('id', id);
+  
+          if (!error) {
+              this.lista = this.lista.filter(animal => animal.id !== id); // Eliminar localmente
+          }
+  
+          return { error };
+      } catch (error) {
+          console.error('Error inesperado:', error);
+          return { error: 'Error inesperado al eliminar el animal.' };
+      }
+    }  
   }
 })

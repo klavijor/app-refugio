@@ -17,33 +17,33 @@
         Agregar nuevo animal
       </button>
   
-      <!-- Modal -->
-      <div
-        v-if="mostrarFormulario"
-        class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50"
-      >
-        <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-2xl relative">
-          <button
-            class="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
-            @click="cerrarModal"
-          >
+      <!-- Modal usando Headless UI -->
+      <Dialog :open="mostrarFormulario" @close="cerrarModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <DialogOverlay class="fixed inset-0 bg-black bg-opacity-40" />
+        
+        <!-- Contenedor con scroll si es necesario -->
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative max-h-screen overflow-y-auto">
+          <button @click="cerrarModal" class="absolute top-3 right-3 text-gray-500 hover:text-black text-2xl">
             ✖
           </button>
-  
-          <h2 class="text-xl font-semibold text-green-700 mb-4">
+          
+          <DialogTitle class="text-xl font-semibold text-green-700 mb-4">
             {{ modoFormulario === 'editar' ? 'Editar animal 📝' : 'Nuevo animal 🐶' }}
-          </h2>
-  
+          </DialogTitle>
+
           <AnimalForm :modo="modoFormulario" :datos="animalEnEdicion" @submit="enviarFormulario" />
         </div>
-      </div>
+      </Dialog>
   
-      <!-- Cards -->
+      <!-- Mensajes de carga o vacío -->
       <div v-if="loading" class="text-center text-gray-500">Cargando animales...</div>
-      <div
-        v-else
-        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
+
+      <div v-else-if="store.lista.length === 0" class="text-center text-gray-500">
+        No hay animales registrados.
+      </div>
+
+      <!-- Cards -->
+      <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="animal in store.lista"
           :key="animal.id"
@@ -62,7 +62,7 @@
               </span>
             </p>
           </div>
-  
+
           <div class="flex justify-end gap-2 mt-4">
             <button
               class="text-yellow-500 hover:text-yellow-600"
@@ -80,7 +80,7 @@
             </button>
             <button
               class="text-red-500 hover:text-red-600"
-              @click="eliminarAnimal(animal.id)"
+              @click="eliminarAnimal(animal)"
               title="Eliminar"
             >
               🗑️
@@ -94,6 +94,7 @@
   
   <script setup>
   import { ref, onMounted, computed } from 'vue'
+  import { Dialog, DialogOverlay, DialogTitle } from '@headlessui/vue'
   import { useAnimalesStore } from '../stores/animales'
   import AnimalForm from '../components/AnimalForm.vue'
   
@@ -116,10 +117,21 @@
     if (!error) await store.cargarAnimales()
   }
   
-  async function eliminarAnimal(id) {
+  async function eliminarAnimal(animal) {
+    if (!animal || !animal.id) {
+        console.error("Error: El animal no tiene un ID válido:", animal);
+        alert("⚠️ Error al eliminar: El animal no tiene un ID válido.");
+        return;
+    }
+
     if (confirm('¿Estás seguro de eliminar este animal?')) {
-      const { error } = await store.eliminarAnimal(id)
-      if (!error) await store.cargarAnimales()
+        const { error } = await store.eliminarAnimal(animal.id, animal.foto_url);
+        if (!error) {
+            await store.cargarAnimales();
+        } else {
+            console.error('Error al eliminar animal:', error);
+            alert(error);
+        }
     }
   }
   

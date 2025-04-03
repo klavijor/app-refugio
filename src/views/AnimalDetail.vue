@@ -8,7 +8,7 @@
           <h1 class="text-3xl font-bold text-green-700 mb-2">{{ animal.nombre }}</h1>
           <ul class="text-sm text-gray-700 space-y-1 mb-4">
             <li><strong>Especie:</strong> {{ animal.especie }}</li>
-            <li><strong>Edad:</strong> {{ animal.edad_aprox }}</li>
+            <li><strong>Edad:</strong> {{ animal.edad_aprox }} meses</li>
             <li><strong>Sexo:</strong> {{ animal.sexo }}</li>
             <li><strong>Estado:</strong> {{ animal.estado }}</li>
             <li><strong>Fecha de rescate:</strong> {{ animal.fecha_rescate }}</li>

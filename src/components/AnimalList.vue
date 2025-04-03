@@ -58,7 +58,14 @@
 
     <!-- Mensajes de carga o vacío -->
     <div v-if="loading" class="text-center text-gray-500">Cargando animales...</div>
-    <div v-else-if="animalesFiltrados.length === 0" class="text-center text-gray-500">No hay animales que coincidan con los filtros.</div>
+
+    <div v-else-if="store.lista.length === 0" class="text-center text-gray-500">
+      No hay animales registrados.
+    </div>
+
+    <div v-else-if="animalesFiltrados.length === 0" class="text-center text-gray-500">
+      No hay animales que coincidan con los filtros.
+    </div>
 
     <!-- Cards -->
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -76,7 +83,7 @@
         <div class="p-4">
           <h2 class="text-xl font-semibold text-green-700">{{ animal.nombre }}</h2>
           <p class="text-sm text-gray-600"><strong>Especie:</strong> {{ animal.especie }}</p>
-          <p class="text-sm text-gray-600"><strong>Edad:</strong> {{ animal.edad_aprox }}</p>
+          <p class="text-sm text-gray-600"><strong>Edad:</strong> {{ animal.edad_aprox }} meses</p>
           <p class="text-sm text-gray-600">
             <strong>Estado: </strong>
             <span
