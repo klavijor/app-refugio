@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer">
       {{ modo === "editar" ? "Guardar cambios" : "Agregar animal" }}
     </button>
   </form>
@@ -196,6 +196,7 @@ const enviar = async () => {
 
 <style scoped>
 .input {
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 0.5rem;
