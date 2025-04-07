@@ -5,29 +5,23 @@
       <div v-else class="bg-white shadow rounded-xl overflow-hidden">
         <img :src="animal.foto_url" :alt="animal.nombre" class="w-full h-80 object-cover" />
         <div class="p-6">
-          <h1 class="text-3xl mb-3 font-bold text-green-700">{{ animal.nombre }}</h1>
-          <ul class="text-sm text-gray-700 space-y-2">
-            <li>
-              Soy {{ fraseSexo(animal.sexo) }}, tengo {{ formatearEdad(animal.edad_aprox) }}
-            </li>
-            <li>{{ animal.estado === 'adoptado' ? 'Ya encontré una familia que me quiere 💚' : 'Estoy buscando un hogar lleno de amor 🏡' }}</li>
-            <li>Me rescataron el {{ formatearFecha(animal.fecha_rescate) }}</li>
+          <h1 class="text-3xl font-bold text-green-700 mb-2">{{ animal.nombre }}</h1>
+          <ul class="text-sm text-gray-700 space-y-1 mb-4">
+            <li><strong>Especie:</strong> {{ animal.especie }}</li>
+            <li><strong>Edad:</strong> {{ animal.edad_aprox }} meses</li>
+            <li><strong>Sexo:</strong> {{ animal.sexo }}</li>
+            <li><strong>Estado:</strong> {{ animal.estado }}</li>
+            <li><strong>Fecha de rescate:</strong> {{ animal.fecha_rescate }}</li>
           </ul>
-
-          <p
-            v-if="animal.historia && animal.historia.trim() !== ''"
-            class="text-gray-600 mt-4 italic border-l-4 border-green-600 pl-4"
-          >
-            “Esta es mi historia: {{ animal.historia }}”
-          </p>
-
+          <p class="text-gray-600 mb-4">{{ animal.historia }}</p>
+  
           <a
             v-if="whatsappLink"
             :href="whatsappLink"
             target="_blank"
-            class="inline-block bg-green-600 text-white px-4 py-2 mt-4 rounded-lg hover:bg-green-700 transition"
+            class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
             >
-            Dame una oportunidad ❤
+            Contactar por WhatsApp
           </a>
         </div>
       </div>
@@ -60,29 +54,5 @@ onMounted(async () => {
   animal.value = store.getAnimalPorId(id)
   loading.value = false
 })
-
-function formatearFecha(fechaISO) {
-  const opciones = { day: 'numeric', month: 'long', year: 'numeric' }
-  return new Date(fechaISO).toLocaleDateString('es-ES', opciones)
-}
-
-function formatearEdad(meses) {
-  if (meses === 0) return "recién nacido"
-  if (meses === 1) return "1 mes"
-  if (meses < 12) return `${meses} meses`
-
-  const años = Math.floor(meses / 12)
-  const resto = meses % 12
-
-  let texto = años === 1 ? "1 año" : `${años} años`
-  if (resto === 1) texto += " y 1 mes"
-  else if (resto > 1) texto += ` y ${resto} meses`
-
-  return texto
-}
-
-function fraseSexo(sexo) {
-  return sexo === 'macho' ? 'un macho' : 'una hembra'
-}
   </script>
   

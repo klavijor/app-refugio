@@ -19,19 +19,19 @@
         </router-link>
         <button
           @click="cerrarSesion"
-          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer"
+          class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Cerrar sesión
         </button>
       </template>
     </div>
 
-    <h1 class="text-4xl font-bold text-center text-green-700 mb-4">
-      Huellas Vivas
+    <h1 class="text-4xl font-bold text-center text-green-700 mb-10">
+      🐾 Animales en Adopción
     </h1>
 
     <!-- Filtros -->
-    <div class="bg-white shadow rounded-lg p-4 mb-6 flex flex-col md:flex-row gap-4">
+    <div class="flex flex-col md:flex-row md:items-center md:gap-6 mb-6">
       <div class="mb-4 md:mb-0">
         <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por especie:</label>
         <select v-model="filtroEspecie" class="border border-gray-300 rounded px-3 py-2 w-full">
@@ -81,12 +81,16 @@
           class="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-200"
         />
         <div class="p-4">
-          <h2 class="text-xl mb-2 font-semibold text-green-700">Me llamo {{ animal.nombre }}</h2>
-          <p class="text-sm mb-1 text-gray-600">
-            Soy {{ fraseSexo(animal.sexo) }}, tengo {{ formatearEdad(animal.edad_aprox) }}
-          </p>
+          <h2 class="text-xl font-semibold text-green-700">{{ animal.nombre }}</h2>
+          <p class="text-sm text-gray-600"><strong>Especie:</strong> {{ animal.especie }}</p>
+          <p class="text-sm text-gray-600"><strong>Edad:</strong> {{ animal.edad_aprox }} meses</p>
           <p class="text-sm text-gray-600">
-            {{ animal.estado === 'adoptado' ? 'Ya encontré un hogar 💚' : 'Estoy en busca de un hogar 🏡' }}
+            <strong>Estado: </strong>
+            <span
+              :class="animal.estado === 'adoptado' ? 'text-red-500' : 'text-green-600'"
+            >
+              {{ animal.estado === 'adoptado' ? 'Adoptado' : 'En adopción' }}
+            </span>
           </p>
         </div>
       </router-link>
@@ -133,24 +137,5 @@ const esAdmin = computed(() => usuarioStore.esAdmin)
 const cerrarSesion = async () => {
   await usuarioStore.cerrarSesion()
   router.replace('/')
-}
-
-function formatearEdad(meses) {
-  if (meses === 0) return "recién nacido"
-  if (meses === 1) return "1 mes"
-  if (meses < 12) return `${meses} meses`
-
-  const años = Math.floor(meses / 12)
-  const resto = meses % 12
-
-  let texto = años === 1 ? "1 año" : `${años} años`
-  if (resto === 1) texto += " y 1 mes"
-  else if (resto > 1) texto += ` y ${resto} meses`
-
-  return texto
-}
-
-function fraseSexo(sexo) {
-  return sexo === 'macho' ? 'un macho' : 'una hembra'
 }
 </script>

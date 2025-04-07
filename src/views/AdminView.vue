@@ -12,7 +12,7 @@
       <!-- Botón -->
       <button
         @click="abrirModalAgregar"
-        class="mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
+        class="mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
       >
         Agregar nuevo animal
       </button>
@@ -53,7 +53,7 @@
             <h2 class="text-xl font-bold text-green-700">{{ animal.nombre }}</h2>
             <p class="text-sm text-gray-600"><strong>Especie:</strong> {{ animal.especie }}</p>
             <p class="text-sm text-gray-600">
-              <strong>Estado: </strong>
+              <strong>Estado:</strong>
               <span
                 :class="animal.estado === 'adoptado' ? 'text-red-500' : 'text-green-600'"
                 class="font-medium"

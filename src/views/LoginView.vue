@@ -5,7 +5,7 @@
         <form @submit.prevent="login">
           <input v-model="email" type="email" placeholder="Correo" class="input mb-3" required />
           <input v-model="password" type="password" placeholder="Contraseña" class="input mb-4" required />
-          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded cursor-pointer">
+          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">
             Iniciar sesión
           </button>
           <p v-if="error" class="text-red-600 mt-3 text-sm text-center">{{ error }}</p>
@@ -17,6 +17,7 @@
   <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import { supabase } from '../lib/supabase'
   import { useUsuarioStore } from '../stores/usuario'
   
   const email = ref('')
@@ -41,7 +42,6 @@
   
   <style scoped>
   .input {
-    font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 6px;
     padding: 0.5rem;
